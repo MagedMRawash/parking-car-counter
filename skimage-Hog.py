@@ -6,7 +6,7 @@ from skimage import color, exposure, io
 # from dataHandling import dataBase 
 
 # Positive, Negative = dataBase() 
-
+ 
 def extract_feature(images):
     features = []
     for image in images:
