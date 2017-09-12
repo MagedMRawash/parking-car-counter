@@ -3,37 +3,39 @@ import glob
 import numpy as np 
 from skimage.feature import hog
 from skimage import color, exposure, io
-# from dataHandling import dataBase 
+from dataHandling import dataBase 
 
-# Positive, Negative = dataBase() 
+Positive, Negative = dataBase() 
  
 def extract_feature(images):
-    features = []
+    features = np.array([])
     for image in images:
         sourceImage = color.rgb2gray( io.imread(image) )
         hog_features = hog(sourceImage, orientations=8, pixels_per_cell=(8, 8), cells_per_block=(1, 1), visualise=False, feature_vector=True) 
-        features.append(hog_features)
+        features = np.append(features,hog_features)
+        print(hog_features.ndim)
+        
         print(image)
          
     return features
-"""
-car_features = extract_feature(Positive)
-car_features.dump("car_features_RGB.dat")
 
-notcar_features = extract_feature(Negative)
-notcar_features.dump("notcar_features_RGB.dat")
-"""
+# car_features = extract_feature(Positive)
+# car_features.dump("car_features_RGB.dat")
+
+# notcar_features = extract_feature(Negative)
+# notcar_features.dump("notcar_features_RGB.dat")
+
 ###
 
-car_features = np.load("car_features.p") 
-print("car_file Loaded" , car_features )
+car_features =np.load("car_features_RGB_nparr.dat")
+print("car_file Loaded" , car_features.shape )
 
-notcar_features = np.load("notcar_features.p")
-print("notcar_file Loaded ", notcar_features )
+notcar_features =np.load("notcar_features_RGB_nparr.dat")
+print("notcar_file Loaded ", notcar_features.shape )
 
 ### 
 # Create an array stack of feature vectors
-X = np.vstack( (car_features, notcar_features), axis=1 ).astype(np.float64)     
+X = np.vstack( (car_features, notcar_features) ).astype(np.float64)     
 print('X.shape',X.shape)
 # Fit a per-column scaler 
 X_scaler = StandardScaler().fit(X)
