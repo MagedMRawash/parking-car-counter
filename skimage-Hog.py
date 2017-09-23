@@ -2,22 +2,24 @@
 import glob
 import numpy as np 
 from skimage.feature import hog
+from sklearn.preprocessing import StandardScaler
 from skimage import color, exposure, io
-from dataHandling import dataBase 
 
-Positive, Negative = dataBase() 
+# from dataHandling import dataBase 
+
+# Positive, Negative = dataBase() 
  
-def extract_feature(images):
-    features = np.array([])
-    for image in images:
-        sourceImage = color.rgb2gray( io.imread(image) )
-        hog_features = hog(sourceImage, orientations=8, pixels_per_cell=(8, 8), cells_per_block=(1, 1), visualise=False, feature_vector=True) 
-        features = np.append(features,hog_features)
-        print(hog_features.ndim)
+# def extract_feature(images):
+#     features = np.array([])
+#     for image in images:
+#         sourceImage = color.rgb2gray( io.imread(image) )
+#         hog_features = hog(sourceImage, orientations=8, pixels_per_cell=(8, 8), cells_per_block=(1, 1), visualise=False, feature_vector=True) 
+#         features = np.append(features,hog_features)
+#         print(hog_features.ndim)
         
-        print(image)
+#         print(image)
          
-    return features
+#     return features
 
 # car_features = extract_feature(Positive)
 # car_features.dump("car_features_RGB.dat")
@@ -27,16 +29,25 @@ def extract_feature(images):
 
 ###
 
-car_features =np.load("car_features_RGB_nparr.dat")
+car_features =np.asarray(np.load("car_features.p"))
 print("car_file Loaded" , car_features.shape )
 
-notcar_features =np.load("notcar_features_RGB_nparr.dat")
+notcar_features =np.asarray(np.load("notcar_features.p"))
+print("notcar_file Loaded ", notcar_features.shape )
+
+minNump = np.min(np.array([car_features.size, notcar_features.size]))
+print(minNump)
+car_features = car_features[:minNump]
+print("car_file Loaded" , car_features.shape )
+notcar_features = notcar_features[:minNump]
 print("notcar_file Loaded ", notcar_features.shape )
 
 ### 
+
 # Create an array stack of feature vectors
-X = np.vstack( (car_features, notcar_features) ).astype(np.float64)     
+X = np.stack( (car_features, notcar_features) ).asty     
 print('X.shape',X.shape)
+
 # Fit a per-column scaler 
 X_scaler = StandardScaler().fit(X)
 # Apply the scaler to X

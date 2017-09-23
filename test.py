@@ -17,10 +17,16 @@ import numpy as np
 
 ### 
 
-x = np.array([1,2,3,4,5,8,6])
+x = np.array([1,2,3,4,5,6,55,8,33,34,85])
 y = np.array([7,8,9,10,11])
 
 
-t = np.vstack((x,y))
+t1 = np.stack((x,y))
+t2 = np.asarray((x,y))
 
-print(t)
+X = np.concatenate( (x,y) )
+    
+print('X.shape',X.shape)
+print(t1)
+print(t2)
+print(X)
