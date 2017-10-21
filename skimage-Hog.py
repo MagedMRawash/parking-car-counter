@@ -29,31 +29,31 @@ from skimage import color, exposure, io
 
 ###
 
-car_features =np.asarray(np.load("car_features.p"))
-print("car_file Loaded" , car_features.shape )
+car_features = np.load("car_features.p")
+print("car_file Loaded" , len(car_features ) )
 
-notcar_features =np.asarray(np.load("notcar_features.p"))
-print("notcar_file Loaded ", notcar_features.shape )
+notcar_features =  np.load("notcar_features.p")
+print("notcar_file Loaded ", len(notcar_features) )
 
-minNump = np.min(np.array([car_features.size, notcar_features.size]))
-print(minNump)
-car_features = car_features[:minNump]
-print("car_file Loaded" , car_features.shape )
-notcar_features = notcar_features[:minNump]
-print("notcar_file Loaded ", notcar_features.shape )
+# minNump = np.min(np.array([car_features.size, notcar_features.size]))
+# print(minNump)
+# # car_features = car_features
+# print("car_file Loaded" , len(car_features ))
+# notcar_features = notcar_features
+# print("notcar_file Loaded ", len(notcar_features) )
 
 ### 
 
 # Create an array stack of feature vectors
-X = np.stack( (car_features, notcar_features) ).asty     
-print('X.shape',X.shape)
+X = np.concatenate( ( car_features, notcar_features ) )
+print( 'X.shape', X.shape )
 
 # Fit a per-column scaler 
 X_scaler = StandardScaler().fit(X)
 # Apply the scaler to X
 scaled_X = X_scaler.transform(X)
 
-X_scaler.dump("saved_X_scaler.dat")
+np.asarray(X_scaler).dump("saved_X_scaler.dat")
 
 # Define the labels vector
 y = np.hstack((np.ones(len(car_features)), np.zeros(len(notcar_features))))
