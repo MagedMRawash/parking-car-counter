@@ -1,34 +1,4 @@
-"""
-
-car_file Loaded 337780
-notcar_file Loaded  358071
-337780
-car_file Loaded 337780
-notcar_file Loaded  337780
-X.shape (675560, 1760)
-Traceback (most recent call last):
-  File "C:\Program Files\JetBrains\PyCharm Community Edition 2017.2.3\helpers\pydev\pydevd.py", line 1599, in <module>
-    globals = debugger.run(setup['file'], None, None, is_module)
-  File "C:\Program Files\JetBrains\PyCharm Community Edition 2017.2.3\helpers\pydev\pydevd.py", line 1026, in run
-    pydev_imports.execfile(file, globals, locals)  # execute the script
-  File "C:\Program Files\JetBrains\PyCharm Community Edition 2017.2.3\helpers\pydev\_pydev_imps\_pydev_execfile.py", line 18, in execfile
-    exec(compile(contents+"\n", file, 'exec'), glob, loc)
-  File "D:/Privet/work/Python/PycharmProjects/parking-car-counter/skimage-Hog.py", line 72, in <module>
-    X_scaler = StandardScaler().fit(X)
-  File "C:\Program Files\Anaconda3\lib\site-packages\sklearn\preprocessing\data.py", line 557, in fit
-    return self.partial_fit(X, y)
-  File "C:\Program Files\Anaconda3\lib\site-packages\sklearn\preprocessing\data.py", line 621, in partial_fit
-    self.n_samples_seen_)
-  File "C:\Program Files\Anaconda3\lib\site-packages\sklearn\utils\extmath.py", line 742, in _incremental_mean_and_var
-    new_unnormalized_variance = X.var(axis=0) * new_sample_count
-  File "C:\Program Files\Anaconda3\lib\site-packages\numpy\core\_methods.py", line 101, in _var
-    x = asanyarray(arr - arrmean)
-MemoryError
-
-
-"""
-import glob
-import numpy as np 
+import numpy as np
 from sklearn.svm import LinearSVC
 from sklearn.cross_validation import train_test_split
 import pickle
@@ -64,7 +34,7 @@ print("car_file Loaded" , len(car_features ) )
 notcar_features =  np.load("notcar_features.p")
 print("notcar_file Loaded ", len(notcar_features) )
 
-minNump = np.min(np.array([len(car_features), len(notcar_features)]))
+minNump = 130000 # np.min(np.array([len(car_features), len(notcar_features)]))
 print(minNump)
 car_features = car_features[:minNump]
 print("car_file Loaded" , len(car_features ))
@@ -74,12 +44,15 @@ print("notcar_file Loaded ", len(notcar_features) )
 ### 
 
 length = len(sorted(car_features,key=len, reverse=True)[0])
+notlength = len(sorted(notcar_features,key=len, reverse=True)[0])
+
+length = max( length , notlength )
+
 car_features= np.array([np.hstack((xi , [0]*(length-len(xi)))) for xi in car_features])
 
 pickle.dump(car_features, open("car_features_generalisedList.p", 'wb'), protocol=4)
 
-notlength = len(sorted(notcar_features,key=len, reverse=True)[0])
-notcar_features= np.array([np.hstack((xi , [0]*(notlength-len(xi)))) for xi in notcar_features])
+notcar_features= np.array([np.hstack((xi , [0]*(length-len(xi)))) for xi in notcar_features])
 
 pickle.dump(notcar_features, open("notcar_features_generalisedList.p", 'wb'), protocol=4)
 
@@ -117,4 +90,35 @@ X_train, X_test, y_train, y_test = train_test_split(scaled_X, y, test_size=0.2, 
 svc = LinearSVC()
 svc.fit(X_train, y_train)
 
-svc.dump("saved_svc.dat") 
+pickle.dump(svc, open("saved_svc.p", 'wb'), protocol=4)
+pickle.dump(X_test, open("X_test.p", 'wb'), protocol=4)
+pickle.dump(y_test , open("y_test.p", 'wb'), protocol=4)
+
+
+# """
+# car_file Loaded 337780
+# notcar_file Loaded  358071
+# 337780
+# car_file Loaded 337780
+# notcar_file Loaded  337780
+# X.shape (675560, 1760)
+# Traceback (most recent call last):
+#   File "C:\Program Files\JetBrains\PyCharm Community Edition 2017.2.3\helpers\pydev\pydevd.py", line 1599, in <module>
+#     globals = debugger.run(setup['file'], None, None, is_module)
+#   File "C:\Program Files\JetBrains\PyCharm Community Edition 2017.2.3\helpers\pydev\pydevd.py", line 1026, in run
+#     pydev_imports.execfile(file, globals, locals)  # execute the script
+#   File "C:\Program Files\JetBrains\PyCharm Community Edition 2017.2.3\helpers\pydev\_pydev_imps\_pydev_execfile.py", line 18, in execfile
+#     exec(compile(contents+"\n", file, 'exec'), glob, loc)
+#   File "D:/Privet/work/Python/PycharmProjects/parking-car-counter/skimage-Hog.py", line 72, in <module>
+#     X_scaler = StandardScaler().fit(X)
+#   File "C:\Program Files\Anaconda3\lib\site-packages\sklearn\preprocessing\data.py", line 557, in fit
+#     return self.partial_fit(X, y)
+#   File "C:\Program Files\Anaconda3\lib\site-packages\sklearn\preprocessing\data.py", line 621, in partial_fit
+#     self.n_samples_seen_)
+#   File "C:\Program Files\Anaconda3\lib\site-packages\sklearn\utils\extmath.py", line 742, in _incremental_mean_and_var
+#     new_unnormalized_variance = X.var(axis=0) * new_sample_count
+#   File "C:\Program Files\Anaconda3\lib\site-packages\numpy\core\_methods.py", line 101, in _var
+#     x = asanyarray(arr - arrmean)
+# MemoryError
+#
+# """
